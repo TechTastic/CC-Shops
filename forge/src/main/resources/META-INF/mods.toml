@@ -1,0 +1,49 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+#issueTrackerURL = ""
+license = "MIT License"
+
+[[mods]]
+modId = "ccshops"
+version = "${version}"
+displayName = "CC Simple Shops Integration Addon"
+authors = "TechTastic"
+description = '''
+This is a simple mod to let ComputerCraft interact with Simple Shops
+'''
+#logoFile = ""
+
+[[dependencies.ccshops]]
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ccshops]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ccshops]]
+modId = "architectury"
+mandatory = true
+versionRange = "[4.11.91,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ccshops]]
+modId = "simpleshops"
+mandatory = true
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.ccshops]]
+modId = "computercraft"
+mandatory = true
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

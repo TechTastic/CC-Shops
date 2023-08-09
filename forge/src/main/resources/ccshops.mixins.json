@@ -6,7 +6,9 @@
   "client": [
   ],
   "mixins": [
-    "MixinSimpleShopTileEntity"
+    "MixinSimpleShopTileEntity",
+    "MixinSimpleShopBlock",
+    "MixinTileTurtle"
   ],
   "injectors": {
     "defaultRequire": 1

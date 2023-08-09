@@ -16,10 +16,14 @@ public class CCShopsPeripheralProvider implements IPeripheralProvider {
     @NotNull
     @Override
     public LazyOptional<IPeripheral> getPeripheral(@NotNull Level level, @NotNull BlockPos blockPos, @NotNull Direction direction) {
-        BlockEntity comp = level.getBlockEntity(blockPos.relative(direction.getOpposite()));
         BlockEntity be = level.getBlockEntity(blockPos);
-        if (!(comp instanceof TileTurtle) && be instanceof SimpleShopTileEntity shop)
+        if (!isTurtle(level, blockPos.relative(direction)) &&
+                be instanceof SimpleShopTileEntity shop)
             return LazyOptional.of(() -> new SimpleShopPeripheral(shop));
         return LazyOptional.empty();
+    }
+
+    private boolean isTurtle(Level level, BlockPos pos) {
+        return level.getBlockEntity(pos) instanceof TileTurtle;
     }
 }

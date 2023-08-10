@@ -1,6 +1,6 @@
-package io.github.techtastic.ccshops.forge.mixin;
+package io.github.techtastic.ccshops.mixin;
 
-import io.github.techtastic.ccshops.forge.util.ICreativeAccess;
+import io.github.techtastic.ccshops.util.ICreativeAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import wolforce.simpleshops.SimpleShopBlock;
 

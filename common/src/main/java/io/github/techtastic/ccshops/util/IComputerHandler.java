@@ -1,4 +1,4 @@
-package io.github.techtastic.ccshops.forge.util;
+package io.github.techtastic.ccshops.util;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
 

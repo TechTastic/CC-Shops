@@ -1,4 +1,4 @@
-package io.github.techtastic.ccshops.forge.util;
+package io.github.techtastic.ccshops.util;
 
 public interface ICreativeAccess {
     boolean ccshops$isCreative();

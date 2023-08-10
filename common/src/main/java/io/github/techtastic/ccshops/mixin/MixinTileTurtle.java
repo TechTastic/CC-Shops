@@ -1,10 +1,10 @@
-package io.github.techtastic.ccshops.forge.mixin;
+package io.github.techtastic.ccshops.mixin;
 
 import dan200.computercraft.api.lua.ILuaAPI;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.turtle.blocks.TileTurtle;
-import io.github.techtastic.ccshops.forge.peripheral.ShopAPI;
+import io.github.techtastic.ccshops.turtle.ShopAPI;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

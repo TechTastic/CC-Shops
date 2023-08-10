@@ -1,14 +1,13 @@
-package io.github.techtastic.ccshops.forge.mixin;
+package io.github.techtastic.ccshops.mixin;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleCommandResult;
 import dan200.computercraft.shared.peripheral.generic.data.ItemData;
 import dan200.computercraft.shared.turtle.blocks.TileTurtle;
-import io.github.techtastic.ccshops.forge.util.IComputerHandler;
-import io.github.techtastic.ccshops.forge.util.ICreativeAccess;
-import io.github.techtastic.ccshops.forge.util.IShopAccess;
-import net.minecraft.core.NonNullList;
+import io.github.techtastic.ccshops.util.IComputerHandler;
+import io.github.techtastic.ccshops.util.ICreativeAccess;
+import io.github.techtastic.ccshops.util.IShopAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +21,6 @@ import wolforce.simpleshops.SimpleShopTileEntity;
 import wolforce.utils.stacks.UtilItemStack;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Mixin(SimpleShopTileEntity.class)
 public abstract class MixinSimpleShopTileEntity implements IShopAccess, IComputerHandler {
@@ -52,13 +50,29 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
     }
 
     @Override
+    public void ccshops$setOwnerByUuid(UUID uuid) {
+        this.owner = uuid;
+        this.sendUpdate();
+    }
+
+    @Override
     public int ccshops$getStockNr() {
         return getStockNr();
+    }
+
+    public void ccshops$setStockNr(int invNr) {
+        this.invNr = invNr;
+        this.sendUpdate();
     }
 
     @Override
     public int ccshops$getGainsNr() {
         return gainsNr;
+    }
+
+    public void ccshops$setGainsNr(int gainsNr) {
+        this.gainsNr = gainsNr;
+        this.sendUpdate();
     }
 
     @Override
@@ -106,76 +120,66 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
     public TurtleCommandResult ccshops$tryBuyWithTurtle(ITurtleAccess turtle, ItemStack input) {
         HashMap<String, Object> item = new HashMap<>();
         ItemData.fillBasic(item, input);
+        String label = ((TileTurtle) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel();
 
         boolean isCreative = ((ICreativeAccess) SimpleShopTileEntity.class.cast(this).getBlockState().getBlock()).ccshops$isCreative();
 
-        if (this.getStockNr() > 0 || isCreative) {
-            ItemStack cost = this.getCost();
-            int resultSlot = ccshops$hasOpenSpace(turtle, this.getOutputStack());
-            if (input.sameItem(cost) && input.getCount() >= cost.getCount() && resultSlot != -1) {
-                ItemStack result = this.getOutputStack();
-                ItemStack change = UtilItemStack.setCount(input, input.getCount() - cost.getCount());
-                if (!isCreative) {
-                    invNr -= result.getCount();
-                }
-
-                this.gainsNr += cost.getCount();
-
-                Container inv = turtle.getInventory();
-                int selected = turtle.getSelectedSlot();
-                inv.setItem(selected, change);
-
-                ItemStack current = inv.getItem(resultSlot);
-                if (current.equals(ItemStack.EMPTY))
-                    inv.setItem(resultSlot, result);
-                else {
-                    current.grow(result.getCount());
-                }
-
-                this.sendUpdate();
-
-                ccshops$fireEvent("buy_attempt",
-                        ((TileTurtle) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel(),
-                        item, isCreative, true);
-
-                return TurtleCommandResult.success();
-            }
-
-            ccshops$fireEvent("buy_attempt",
-                    ((TileTurtle) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel(),
-                    item, isCreative, false);
-
-            if (!input.sameItem(cost))
-                return TurtleCommandResult.failure("Incorrect Payment Item");
-            else if (input.getCount() < cost.getCount())
-                return TurtleCommandResult.failure("Insufficient Funds");
-            else
-                return TurtleCommandResult.failure("Not Enough Space");
+        if (this.getStockNr() <= 0 && !isCreative) {
+            ccshops$fireEvent("buy_attempt", label, item, false, false);
+            return TurtleCommandResult.failure("Out of Stock");
         }
 
-        ccshops$fireEvent("buy_attempt",
-                ((TileTurtle) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel(),
-                item, false, false);
+        ItemStack result = this.getOutputStack();
+        ItemStack cost = this.getCost();
+        int resultSlot = ccshops$hasOpenSpace(turtle, result);
 
-        return TurtleCommandResult.failure("Out of Stock");
+        if (!input.sameItem(cost)) {
+            ccshops$fireEvent("buy_attempt", label, item, isCreative, false);
+            return TurtleCommandResult.failure("Incorrect Payment Item");
+        } else if (input.getCount() < cost.getCount()) {
+            ccshops$fireEvent("buy_attempt", label, item, isCreative, false);
+            return TurtleCommandResult.failure("Insufficient Funds");
+        } else if (resultSlot == -1) {
+            ccshops$fireEvent("buy_attempt", label, item, isCreative, false);
+            return TurtleCommandResult.failure("Not Enough Space");
+        }
+
+        ItemStack change = UtilItemStack.setCount(input, input.getCount() - cost.getCount());
+        if (!isCreative)
+            invNr -= result.getCount();
+
+        this.gainsNr += cost.getCount();
+
+        Container inv = turtle.getInventory();
+        int selected = turtle.getSelectedSlot();
+        inv.setItem(selected, change);
+
+        ItemStack current = inv.getItem(resultSlot);
+        if (current.equals(ItemStack.EMPTY))
+            inv.setItem(resultSlot, result);
+        else {
+            current.grow(result.getCount());
+        }
+
+        this.sendUpdate();
+
+        ccshops$fireEvent("buy_attempt", label, item, isCreative, true);
+
+        return TurtleCommandResult.success();
     }
 
     @Unique
     private int ccshops$hasOpenSpace(ITurtleAccess turtle, ItemStack buyable) {
         Container inv = turtle.getInventory();
-        NonNullList<ItemStack> trueInv = NonNullList.createWithCapacity(inv.getContainerSize());
-        for (int i = 0; i < inv.getContainerSize() - 1; i++) {
-            trueInv.add(i, inv.getItem(i));
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack test = inv.getItem(i);
+            System.err.println("Slot: " + i + "\nItem: " + test);
+            if (test.isEmpty() ||
+                    (test.is(buyable.getItem()) &&
+                            test.getCount() <= test.getMaxStackSize() - buyable.getCount()) &&
+                            turtle.getSelectedSlot() != i)
+                return i;
         }
-
-        if (inv.hasAnyOf(Set.of(ItemStack.EMPTY.getItem())))
-            return trueInv.indexOf(ItemStack.EMPTY);
-        else if (inv.hasAnyOf(Set.of(buyable.getItem()))) {
-            Stream<ItemStack> stacks = trueInv.stream().filter(stack -> stack.is(buyable.getItem()) &&
-                    stack.getCount() <= stack.getMaxStackSize() - buyable.getCount());
-            return stacks.findFirst().isPresent() ? trueInv.indexOf(stacks.findFirst().get()) : -1;
-        }
-        else
-            return -1;
+        return -1;
     }
 }

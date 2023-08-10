@@ -1,19 +1,14 @@
-package io.github.techtastic.ccshops.forge.peripheral;
+package io.github.techtastic.ccshops.peripheral;
 
-import dan200.computercraft.ComputerCraft;
-import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
+import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import dan200.computercraft.core.computer.Computer;
-import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
-import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.peripheral.generic.data.ItemData;
-import dan200.computercraft.shared.turtle.blocks.TileTurtle;
-import io.github.techtastic.ccshops.forge.util.IComputerHandler;
-import io.github.techtastic.ccshops.forge.util.IShopAccess;
+import io.github.techtastic.ccshops.util.IComputerHandler;
+import io.github.techtastic.ccshops.util.IShopAccess;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -27,9 +22,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class SimpleShopPeripheral implements IPeripheral {
-    private final SimpleShopTileEntity shop;
-    private final Level level;
-    private final BlockPos pos;
+    final SimpleShopTileEntity shop;
+    final Level level;
+    final BlockPos pos;
 
     public SimpleShopPeripheral(SimpleShopTileEntity shop) {
         this.shop = shop;
@@ -87,17 +82,17 @@ public class SimpleShopPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public String getOwner() {
+    public MethodResult getOwner() throws LuaException {
         if (level.isClientSide)
-            return null;
+            throw new LuaException("Clientside");
         UUID uuid = ((IShopAccess) shop).ccshops$getOwner();
         Player owner = level.getPlayerByUUID(uuid);
         Entity placer = ((ServerLevel) level).getEntity(uuid);
-        return owner == null ? placer == null ? null
-                        : placer.getDisplayName().getString() : owner.getGameProfile().getName();
+        return MethodResult.of(owner == null ? placer == null ? null
+                        : placer.getDisplayName().getString() : owner.getGameProfile().getName(), uuid.toString());
     }
 
-    private HashMap<String, Object> getItemAsMap(ItemStack stack) {
+    private HashMap<String, ?> getItemAsMap(ItemStack stack) {
         HashMap<String, Object> item = new HashMap<>();
         ItemData.fillBasic(item, stack);
         return item;

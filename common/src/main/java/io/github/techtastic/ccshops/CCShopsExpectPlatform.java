@@ -1,9 +1,12 @@
 package io.github.techtastic.ccshops;
 
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
+import net.minecraft.world.item.ItemStack;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 
 public class CCShopsExpectPlatform {
     /**
@@ -22,6 +25,11 @@ public class CCShopsExpectPlatform {
     @ExpectPlatform
     public static Path getConfigDirectory() {
         // Just throw an error, the content should get replaced at runtime.
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static IPeripheralProvider getProvider() {
         throw new AssertionError();
     }
 }

@@ -12,6 +12,12 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+    // CC Tweaked
+    modCompileOnly("curse.maven:cc-tweaked-282001:4630521")
+
+    // Simple Shops
+    modCompileOnly("curse.maven:simple-shops-517272:3806656")
 }
 
 publishing {

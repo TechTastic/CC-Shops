@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import wolforce.simpleshops.SimpleShopTileEntity;
-import wolforce.utils.stacks.UtilItemStack;
+import wolforce.simpleshops.utils.Util;
 
 import java.util.*;
 
@@ -144,7 +144,7 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
             return TurtleCommandResult.failure("Not Enough Space");
         }
 
-        ItemStack change = UtilItemStack.setCount(input, input.getCount() - cost.getCount());
+        ItemStack change = Util.setCount(input, input.getCount() - cost.getCount());
         if (!isCreative)
             invNr -= result.getCount();
 

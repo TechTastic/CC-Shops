@@ -14,10 +14,10 @@ dependencies {
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
     // CC Tweaked
-    modCompileOnly("curse.maven:cc-tweaked-282001:4630521")
+    modCompileOnly("curse.maven:cc-tweaked-282001:5005332")
 
     // Simple Shops
-    modCompileOnly("curse.maven:simple-shops-517272:3806656")
+    modCompileOnly("curse.maven:simple-shops-517272:4409377")
 }
 
 publishing {

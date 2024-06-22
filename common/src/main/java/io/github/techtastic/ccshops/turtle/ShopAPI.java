@@ -4,7 +4,7 @@ import dan200.computercraft.api.lua.ILuaAPI;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.turtle.ITurtleAccess;
-import dan200.computercraft.api.turtle.ITurtleCommand;
+import dan200.computercraft.api.turtle.TurtleCommand;
 import dan200.computercraft.api.turtle.TurtleCommandResult;
 import dan200.computercraft.shared.turtle.core.InteractDirection;
 import io.github.techtastic.ccshops.util.IShopAccess;
@@ -41,7 +41,7 @@ public class ShopAPI implements ILuaAPI {
         return this.turtle.executeCommand(new TurtleShopCommand(InteractDirection.DOWN));
     }
 
-    public static class TurtleShopCommand implements ITurtleCommand {
+    public static class TurtleShopCommand implements TurtleCommand {
         private final InteractDirection direction;
 
         public TurtleShopCommand(InteractDirection direction) {

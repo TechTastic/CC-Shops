@@ -5,7 +5,7 @@ import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import dan200.computercraft.shared.peripheral.generic.data.ItemData;
+import dan200.computercraft.shared.details.ItemDetails;
 import io.github.techtastic.ccshops.util.IComputerHandler;
 import io.github.techtastic.ccshops.util.IShopAccess;
 import net.minecraft.core.BlockPos;
@@ -94,7 +94,7 @@ public class SimpleShopPeripheral implements IPeripheral {
 
     private HashMap<String, ?> getItemAsMap(ItemStack stack) {
         HashMap<String, Object> item = new HashMap<>();
-        ItemData.fillBasic(item, stack);
+        ItemDetails.fillBasic(item, stack);
         return item;
     }
 }

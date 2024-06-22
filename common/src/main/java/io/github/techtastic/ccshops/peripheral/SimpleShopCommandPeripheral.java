@@ -5,6 +5,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import io.github.techtastic.ccshops.util.IShopAccess;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -69,7 +70,7 @@ public class SimpleShopCommandPeripheral extends SimpleShopPeripheral {
             throw new LuaException("Invalid Item Data, needs name");
 
         String name = (String) data.get("name");
-        Item newItem = Registry.ITEM.get(new ResourceLocation(name));
+        Item newItem = BuiltInRegistries.ITEM.get(new ResourceLocation(name));
 
         if (newItem.equals(ItemStack.EMPTY.getItem()) && !name.equals("minecraft:air"))
             throw new LuaException("Invalid Item Name, use namespace:id format");

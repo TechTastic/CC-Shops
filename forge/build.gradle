@@ -36,10 +36,10 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     // CC Tweaked
-    modImplementation("curse.maven:cc-tweaked-282001:4630521")
+    modImplementation("curse.maven:cc-tweaked-282001:5379173")
 
     // Simple Shops
-    modImplementation("curse.maven:simple-shops-517272:3806656")
+    modImplementation("curse.maven:simple-shops-517272:4716851")
 }
 
 processResources {

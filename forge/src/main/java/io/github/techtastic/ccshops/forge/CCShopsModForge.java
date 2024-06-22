@@ -1,6 +1,5 @@
 package io.github.techtastic.ccshops.forge;
 
-import dan200.computercraft.api.ComputerCraftAPI;
 import dev.architectury.platform.forge.EventBuses;
 import io.github.techtastic.ccshops.CCShopsMod;
 import net.minecraftforge.fml.common.Mod;

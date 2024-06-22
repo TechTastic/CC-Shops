@@ -2,7 +2,7 @@ package io.github.techtastic.ccshops.forge;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
-import dan200.computercraft.shared.computer.blocks.TileCommandComputer;
+import dan200.computercraft.shared.computer.blocks.CommandComputerBlockEntity;
 import io.github.techtastic.ccshops.peripheral.SimpleShopCommandPeripheral;
 import io.github.techtastic.ccshops.peripheral.SimpleShopPeripheral;
 import net.minecraft.core.BlockPos;
@@ -25,6 +25,6 @@ public class CCShopsForgePeripheralProvider implements IPeripheralProvider {
     }
 
     private boolean isCommandComputer(Level level, BlockPos pos) {
-        return level.getBlockEntity(pos) instanceof TileCommandComputer;
+        return level.getBlockEntity(pos) instanceof CommandComputerBlockEntity;
     }
 }

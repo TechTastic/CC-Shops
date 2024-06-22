@@ -3,8 +3,8 @@ package io.github.techtastic.ccshops.mixin;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleCommandResult;
-import dan200.computercraft.shared.peripheral.generic.data.ItemData;
-import dan200.computercraft.shared.turtle.blocks.TileTurtle;
+import dan200.computercraft.shared.details.ItemDetails;
+import dan200.computercraft.shared.turtle.blocks.TurtleBlockEntity;
 import io.github.techtastic.ccshops.util.IComputerHandler;
 import io.github.techtastic.ccshops.util.ICreativeAccess;
 import io.github.techtastic.ccshops.util.IShopAccess;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import wolforce.simpleshops.SimpleShopTileEntity;
-import wolforce.utils.stacks.UtilItemStack;
+import wolforce.simpleshops.util.UtilItemStack;
 
 import java.util.*;
 
@@ -34,7 +34,8 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
 
     @Shadow private int gainsNr;
 
-    @Shadow abstract int getStockNr();
+    @Shadow
+    public abstract int getStockNr();
 
     @Shadow public abstract ItemStack getCost();
 
@@ -104,7 +105,7 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
     @Inject(method = "tryBuy", at = @At("TAIL"), remap = false)
     private void ccshops$fireEventUponBuying(Player player, ItemStack input, boolean isCreative, CallbackInfo ci) {
         HashMap<String, Object> item = new HashMap<>();
-        ItemData.fillBasic(item, input);
+        ItemDetails.fillBasic(item, input);
 
         ccshops$fireEvent(
                 "buy_attempt",
@@ -119,8 +120,8 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
     @Override
     public TurtleCommandResult ccshops$tryBuyWithTurtle(ITurtleAccess turtle, ItemStack input) {
         HashMap<String, Object> item = new HashMap<>();
-        ItemData.fillBasic(item, input);
-        String label = ((TileTurtle) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel();
+        ItemDetails.fillBasic(item, input);
+        String label = ((TurtleBlockEntity) Objects.requireNonNull(turtle.getLevel().getBlockEntity(turtle.getPosition()))).getLabel();
 
         boolean isCreative = ((ICreativeAccess) SimpleShopTileEntity.class.cast(this).getBlockState().getBlock()).ccshops$isCreative();
 
@@ -133,7 +134,7 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
         ItemStack cost = this.getCost();
         int resultSlot = ccshops$hasOpenSpace(turtle, result);
 
-        if (!input.sameItem(cost)) {
+        if (!ItemStack.isSameItem(input, cost)) {
             ccshops$fireEvent("buy_attempt", label, item, isCreative, false);
             return TurtleCommandResult.failure("Incorrect Payment Item");
         } else if (input.getCount() < cost.getCount()) {

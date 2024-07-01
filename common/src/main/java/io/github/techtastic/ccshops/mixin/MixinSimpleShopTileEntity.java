@@ -183,6 +183,7 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
             invNr += input.getCount();
             turtle.getInventory().setItem(selected, ItemStack.EMPTY);
             this.ccshops$fireEvent("restocked");
+            this.sendUpdate();
             return TurtleCommandResult.success();
         }
         int countToInsert = output.getCount();
@@ -198,6 +199,7 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
         sendUpdate();
         turtle.getInventory().removeItem(selected, input.getCount() - countToInsert);
         this.ccshops$fireEvent("restocked");
+        this.sendUpdate();
         return TurtleCommandResult.success(new Object[]{selected, input.getCount() - countToInsert});
     }
 
@@ -242,9 +244,9 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
 
             int slot = ccshops$hasOpenSpaceIncludingSelected(turtle, stack);
             if (slot == -1)
-                return TurtleCommandResult.failure("Not Enough Space! %s remaining stock of %sx %s!".formatted(invNr, stack.getCount(), stack.getDisplayName()));
+                return TurtleCommandResult.failure("Not Enough Space! %s remaining stock of %sx %s!".formatted(invNr, stack.getCount(), stack.getDisplayName().getString()));
 
-            invNr--;
+            invNr -= 1;
             ItemStack current = turtle.getInventory().getItem(slot);
             if (current.isEmpty())
                 turtle.getInventory().setItem(slot, stack);

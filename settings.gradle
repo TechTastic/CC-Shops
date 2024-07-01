@@ -5,6 +5,9 @@ pluginManagement {
         maven { url "https://maven.minecraftforge.net/" }
         gradlePluginPortal()
     }
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version '1.9.23'
+    }
 }
 
 include("common")

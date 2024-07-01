@@ -92,9 +92,9 @@ public class SimpleShopPeripheral implements IPeripheral {
                         : placer.getDisplayName().getString() : owner.getGameProfile().getName(), uuid.toString());
     }
 
-    private HashMap<String, ?> getItemAsMap(ItemStack stack) {
+    private HashMap<String, Object> getItemAsMap(ItemStack stack) {
         HashMap<String, Object> item = new HashMap<>();
-        ItemData.fillBasic(item, stack);
+        ItemData.fill(item, stack);
         return item;
     }
 }

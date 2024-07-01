@@ -20,4 +20,14 @@ public interface IShopAccess {
     void ccshops$setGainsNr(int amount);
 
     TurtleCommandResult ccshops$tryBuyWithTurtle(ITurtleAccess turtle, ItemStack input);
+
+    TurtleCommandResult ccshops$restock(ITurtleAccess turtle, int selected);
+
+    boolean ccshops$hasProfits();
+
+    TurtleCommandResult ccshops$dropGains(ITurtleAccess turtle);
+
+    boolean ccshops$hasStock();
+
+    TurtleCommandResult ccshops$dropInv(ITurtleAccess turtle);
 }

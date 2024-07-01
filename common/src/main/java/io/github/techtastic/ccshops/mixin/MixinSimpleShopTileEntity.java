@@ -44,6 +44,12 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
 
     @Shadow protected abstract void sendUpdate();
 
+    @Shadow public abstract void setOutputStack(ItemStack stack);
+
+    @Shadow protected abstract boolean tagsEqualOrNull(ItemStack a1, ItemStack a2);
+
+    @Shadow public abstract void setCost(ItemStack stack);
+
     @Override
     public UUID ccshops$getOwner() {
         return owner;
@@ -168,15 +174,109 @@ public abstract class MixinSimpleShopTileEntity implements IShopAccess, ICompute
         return TurtleCommandResult.success();
     }
 
+    @Override
+    public TurtleCommandResult ccshops$restock(ITurtleAccess turtle, int selected) {
+        ItemStack output = getOutputStack();
+        ItemStack input = turtle.getInventory().getItem(selected).copy();
+        if (output.isEmpty()) {
+            setOutputStack(input);
+            invNr += input.getCount();
+            turtle.getInventory().setItem(selected, ItemStack.EMPTY);
+            this.ccshops$fireEvent("restocked");
+            return TurtleCommandResult.success();
+        }
+        int countToInsert = output.getCount();
+
+        if (!input.sameItem(output))
+            return TurtleCommandResult.failure("Is Not Same Item!");
+        if (!tagsEqualOrNull(input, output))
+            return TurtleCommandResult.failure("Tags are not Equal!");
+        if (input.getCount() < countToInsert)
+            return TurtleCommandResult.failure("Insufficient Restock Aount!");
+
+        invNr += countToInsert;
+        sendUpdate();
+        turtle.getInventory().removeItem(selected, input.getCount() - countToInsert);
+        this.ccshops$fireEvent("restocked");
+        return TurtleCommandResult.success(new Object[]{selected, input.getCount() - countToInsert});
+    }
+
+    @Override
+    public boolean ccshops$hasProfits() {
+        return gainsNr > 0;
+    }
+
+    @Override
+    public TurtleCommandResult ccshops$dropGains(ITurtleAccess turtle) {
+        while (ccshops$hasProfits()) {
+            ItemStack stack = getCost().copy();
+            if (gainsNr >= 64)
+                stack.setCount(64);
+            else
+                stack.setCount(gainsNr);
+
+            int slot = ccshops$hasOpenSpaceIncludingSelected(turtle, stack);
+            if (slot == -1)
+                return TurtleCommandResult.failure("Not Enough Space! %s remaining profits!".formatted(gainsNr));
+
+            gainsNr -= stack.getCount();
+            ItemStack current = turtle.getInventory().getItem(slot);
+            if (current.isEmpty())
+                turtle.getInventory().setItem(slot, stack);
+            else
+                current.grow(stack.getCount());
+        }
+
+        return TurtleCommandResult.success();
+    }
+
+    @Override
+    public boolean ccshops$hasStock() {
+        return invNr > 0;
+    }
+
+    @Override
+    public TurtleCommandResult ccshops$dropInv(ITurtleAccess turtle) {
+        while (ccshops$hasStock()) {
+            ItemStack stack = getOutputStack().copy();
+
+            int slot = ccshops$hasOpenSpaceIncludingSelected(turtle, stack);
+            if (slot == -1)
+                return TurtleCommandResult.failure("Not Enough Space! %s remaining stock of %sx %s!".formatted(invNr, stack.getCount(), stack.getDisplayName()));
+
+            invNr--;
+            ItemStack current = turtle.getInventory().getItem(slot);
+            if (current.isEmpty())
+                turtle.getInventory().setItem(slot, stack);
+            else
+                current.grow(stack.getCount());
+        }
+
+        return TurtleCommandResult.success();
+    }
+
     @Unique
     private int ccshops$hasOpenSpace(ITurtleAccess turtle, ItemStack buyable) {
         Container inv = turtle.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack test = inv.getItem(i);
-            System.err.println("Slot: " + i + "\nItem: " + test);
             if (test.isEmpty() ||
                     (test.is(buyable.getItem()) &&
                             test.getCount() <= test.getMaxStackSize() - buyable.getCount()) &&
+                            turtle.getSelectedSlot() != i)
+                return i;
+        }
+        return -1;
+    }
+
+    @Unique
+    private int ccshops$hasOpenSpaceIncludingSelected(ITurtleAccess turtle, ItemStack stack) {
+        Container inv = turtle.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack test = inv.getItem(i);
+            if (test.isEmpty() ||
+                    (test.sameItem(stack) &&
+                            test.getCount() <= test.getMaxStackSize() - stack.getCount()) &&
                             turtle.getSelectedSlot() != i)
                 return i;
         }

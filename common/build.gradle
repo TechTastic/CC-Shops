@@ -1,3 +1,6 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
 architectury {
     common(rootProject.enabled_platforms.split(","))
 }
@@ -18,6 +21,7 @@ dependencies {
 
     // Simple Shops
     modCompileOnly("curse.maven:simple-shops-517272:3806656")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 publishing {
@@ -31,5 +35,18 @@ publishing {
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
         // Add repositories to publish to here.
+    }
+}
+repositories {
+    mavenCentral()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }

@@ -36,7 +36,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     // CC Tweaked
-    modImplementation("curse.maven:cc-tweaked-282001:5379173")
+    modImplementation("curse.maven:cc-tweaked-282001:5714507")
 
     // Simple Shops
     modImplementation("curse.maven:simple-shops-517272:4716851")
@@ -55,17 +55,17 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier.set "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
+    archiveClassifier.set null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier.set "dev"
 }
 
 sourcesJar {

@@ -14,7 +14,7 @@ dependencies {
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
     // CC Tweaked
-    modCompileOnly("curse.maven:cc-tweaked-282001:5379173")
+    modCompileOnly("curse.maven:cc-tweaked-282001:5714507")
 
     // Simple Shops
     modCompileOnly("curse.maven:simple-shops-517272:4716851")
